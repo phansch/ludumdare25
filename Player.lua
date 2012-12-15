@@ -2,9 +2,9 @@ local Player = {x, y}
 Player.__index = Player
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
-local angle = 0
+local angle, speed = 0, 20
 local img, imgWidth, imgHeight
-local speed = 40
+
 local dt = love.timer.getDelta()
 local slowdown = false
 
@@ -26,7 +26,6 @@ function Player:load()
 end
 
 function Player:draw()
-    --love.graphics.setColor(255, 0, 0)
     love.graphics.draw(img, self.x, self.y, angle, 1, 1, imgWidth/2, imgHeight/2)
 end
 
@@ -34,7 +33,6 @@ function Player:update()
     --update rotation
     if (love.keyboard.isDown('d')) then
         angle = angle + math.pi * 0.02
-
     end
    if (love.keyboard.isDown('a')) then
         angle = angle - math.pi * 0.02
@@ -45,8 +43,6 @@ function Player:update()
         -- slowing down gradually over time
         self:updateLocation()
     end
-
-    self:slowdown()
 end
 
 function Player:slowdown(ultimate)
@@ -61,16 +57,16 @@ function Player:slowdown(ultimate)
 end
 
 function Player:updateLocation()
-    if self:isInBounds() then
-        self.y = self.y + math.sin(angle + math.pi*1.5) * speed * dt
-        self.x = self.x + math.cos(angle + math.pi*1.5) * speed * dt
-    else
-        --slowdown to zero, slowly
+    moveX = math.cos(angle + math.pi*1.5) * speed * dt
+    moveY = math.sin(angle + math.pi*1.5) * speed * dt
+    if self:isInBounds(moveX, moveY) then
+        self.x = self.x + moveX
+        self.y = self.y + moveY
     end
 end
 
-function Player:isInBounds()
-    return self.x > 0 and self.y > 0 and self.x < width and self.y < height
+function Player:isInBounds(moveX, moveY)
+    return (self.x + moveX > 0) and (self.y + moveY > 0) and (self.x + moveX < width) and (self.y + moveY < height)
 end
 
 function love.keyreleased(key)
