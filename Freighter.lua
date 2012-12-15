@@ -13,21 +13,20 @@ function Freighter.create()
     setmetatable(freighter, Freighter)
     freighter.x = math.random(50, width-50)
     freighter.y = math.random(height-100, height+50)
-    freighter.rotation = math.sin(freighter.x-100 / freighter.y-50)
+    freighter.rotation = 0
     freighter.visible = true
-    freighter.speed = 80
+    freighter.speed = 50
     freighter.slowdown = false
-    --set random destintion around planet
+    --set random destination around planet
     freighter.destX = math.random(100,355)
     freighter.destY = math.random(50,305)
     return freighter
 end
 
 function Freighter:load()
-    img = love.graphics.newImage("freighter.png")
+    img = love.graphics.newImage("img/freighter.png")
     imgWidth = img:getWidth()
     imgHeight = img:getHeight()
-
 end
 
 function Freighter:draw()
@@ -37,24 +36,14 @@ function Freighter:draw()
 end
 
 function Freighter:update()
-    --move to 100, 150
-    self.rotation = math.cos(self.x / self.y)
-    print(self.rotation)
-    --math.rad: degree -> radian
+    local rotateTo = math.atan2(self.x - self.destX, self.y - self.destY)
+
+    if (rotateTo > self.rotation + math.pi/2) then rotateTo = rotateTo + math.pi*2 end
+    if (rotateTo < self.rotation - math.pi/2) then rotateTo = rotateTo + math.pi*2 end
+
+    self.rotation = rotateTo
 
     self:updateLocation()
-    -- TODO: add move code
-end
-
-function Freighter:slowdown(ultimate)
-    if self.slowdown == true then
-        self.speed = self.speed - 1.5
-        self:updateLocation()
-        if self.speed <= 0 then
-            self.speed = 20
-            self.slowdown = false
-        end
-    end
 end
 
 function Freighter:updateLocation()

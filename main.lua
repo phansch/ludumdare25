@@ -18,7 +18,7 @@ function love.load()
 
     player:load()
 
-    planet = love.graphics.newImage("planet.png")
+    planet = love.graphics.newImage("img/planet.png")
     planetW = planet:getWidth()
     planetH = planet:getHeight()
 
@@ -39,7 +39,6 @@ function love.draw()
 
     -- draw planet
     love.graphics.draw(planet, 100, 50, math.pi*2, 1, 1)
-    love.graphics.rectangle("line", 100, 50, planetW, planetH)
 
     player:draw()
 
