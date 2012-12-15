@@ -1,6 +1,8 @@
+-- This is the most convoluted code I've written so far.
+-- I'm new to lua, so there's an excuse
 local Player = require 'Player'
 local Freighter = require 'Freighter'
-Timer = require 'hump.timer'
+local Timer = require 'hump.timer'
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
@@ -25,6 +27,8 @@ function love.load()
     for i=1,height,1 do
         stars[i] = { ["x"] = math.random(0, width), ["y"] = i }
     end
+
+    --add freighters
     Timer.addPeriodic(math.random(1, 20), function() createFreighter() end, 5)
 end
 
@@ -36,12 +40,11 @@ function love.draw()
         love.graphics.point(stars[i].x, stars[i].y)
     end
 
-    -- draw planet
-    love.graphics.draw(planet, 100, 50, math.pi*2, 1, 1)
+    love.graphics.draw(planet, 100, 50, math.pi*2, 1, 1) -- draw planet
 
     player:draw()
 
-    --draw fighter(s)
+    --draw freighter(s)
     for i,v in ipairs(Freighters) do
         v:draw()
         love.graphics.print(i .. " [" .. math.floor(v.x) .. ", " .. math.floor(v.y) .. "]", v.x, v.y)
@@ -50,11 +53,12 @@ end
 
 function love.update()
     player:update()
-    for i,f in ipairs(Freighters) do
-        f:update()
+
+    for i,freighter in ipairs(Freighters) do
+        freighter:update()
         for j,shot in ipairs(player.Shots) do
-            if shot:checkCollision(f) then
-                f.visible = false
+            if shot:checkCollision(freighter) then
+                freighter.visible = false
                 killFreighter(i)
                 player:removeShot(j)
             end

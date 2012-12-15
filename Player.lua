@@ -1,9 +1,12 @@
 local Shot = require 'Shot'
+local Timer = require 'hump.timer'
 local Player = {x, y, Shots = {} }
 Player.__index = Player
+
+
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
-local angle, speed = 0, 20
+local angle, speed = 0, 15
 local playerImg, imgWidth, imgHeight
 
 local dt = love.timer.getDelta()
@@ -39,14 +42,14 @@ end
 
 function Player:update()
     --update rotation
-    if love.keyboard.isDown('d') then
+    if love.keyboard.isDown('right') then
         angle = angle + math.pi * 0.02
     end
-   if love.keyboard.isDown('a') then
+   if love.keyboard.isDown('left') then
         angle = angle - math.pi * 0.02
     end
     -- forward movement
-    if love.keyboard.isDown('w') then
+    if love.keyboard.isDown('up') then
         -- make the player move in the direction he is facing
         -- slowing down gradually over time
         self:updateLocation()
@@ -54,7 +57,8 @@ function Player:update()
 
     -- shooting
     if fire then
-        self:fire()
+        Timer.addPeriodic(5, function() self:fire() end)
+
         fire = false
     end
 
@@ -67,6 +71,7 @@ function Player:update()
             end
         end
     end
+    Timer.update(dt)
 end
 
 function Player:slowdown(ultimate)
@@ -105,15 +110,19 @@ function Player:removeShot(shot)
 end
 
 function love.keyreleased(key)
-   if key == "w" then
-      slowdown = true
-   end
+    if key == 'w' then
+        slowdown = true
+    end
+    if key == ' ' then
+        Timer.clear()
+    end
 end
 
 function love.keypressed(key)
     if key == ' ' then
         fire = true
     end
+
 end
 
 return Player

@@ -4,7 +4,7 @@ Shot.__index = Shot
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
 local shotImg, imgWidth, imgHeight
-local speed = 10
+local speed = 30
 local dt = love.timer.getDelta()
 
 local initialShipRotation = math.pi * 1.5
