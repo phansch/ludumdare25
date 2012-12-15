@@ -3,7 +3,7 @@ ludumdare25
 
 This will be my first entry for the [Ludum Dare](http://www.ludumdare.com/) competition.
 
- * My LD Blog: http://www.ludumdare.com/compo/author/plyturon/ (nothing there yet)
+ * My LD Blog: http://www.ludumdare.com/compo/author/plyturon/
  * Timelapse: ~
 
 ## Running the game ##
@@ -21,5 +21,6 @@ If you are using Mac or Linux, read further.
  3. Now either drop the .love file on the app bundle or run `open -n -a love "/home/path/to/game"`
 
 ## Game downloads
+(available, once the competition ends)
  * [Bundled exe](#) (Runs out of the box on windows. Not sure about wine.)
  * [.love](#) file (requires that you have Love2d installed)
