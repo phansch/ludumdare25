@@ -7,6 +7,7 @@ local img, imgWidth, imgHeight
 
 local dt = love.timer.getDelta()
 local slowdown = false
+local initialShipRotation = math.pi * 1.5
 
 function Player.create()
     local player = {}
@@ -57,8 +58,8 @@ function Player:slowdown(ultimate)
 end
 
 function Player:updateLocation()
-    moveX = math.cos(angle + math.pi*1.5) * speed * dt
-    moveY = math.sin(angle + math.pi*1.5) * speed * dt
+    moveX = math.cos(angle + initialShipRotation) * speed * dt
+    moveY = math.sin(angle + initialShipRotation) * speed * dt
     if self:isInBounds(moveX, moveY) then
         self.x = self.x + moveX
         self.y = self.y + moveY

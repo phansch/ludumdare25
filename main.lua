@@ -1,6 +1,6 @@
 local Player = require 'Player'
 local Freighter = require 'Freighter'
-local Timer = require 'hump.timer'
+Timer = require 'hump.timer'
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
@@ -11,12 +11,11 @@ local stars = {}
 
 local updateFreighters = false
 local dt = love.timer.getDelta()
-local elapsedSeconds = 0 -- time since gameStart
-
+local handle
 player = Player.create()
 
-
 function love.load()
+
     player:load()
 
     planet = love.graphics.newImage("planet.png")
@@ -27,7 +26,7 @@ function love.load()
     for i=1,height,1 do
         stars[i] = { ["x"] = math.random(0, width), ["y"] = i }
     end
-    Timer.addPeriodic(3, createFreighters())
+    Timer.addPeriodic(math.random(1, 20), function() createFreighter() end, 5)
 end
 
 function love.draw()
@@ -47,34 +46,22 @@ function love.draw()
     --draw fighter(s)
     for i,v in ipairs(Freighters) do
         v:draw()
-        love.graphics.print(i .. " [" .. v.x .. ", " .. v.y .. "]", v.x, v.y)
+        love.graphics.print(i .. " [" .. math.floor(v.x) .. ", " .. math.floor(v.y) .. "]", v.x, v.y)
     end
 end
 
 function love.update()
     player:update()
-    for i,v in ipairs(Freighters) do
-        v:update()
+    for i,f in ipairs(Freighters) do
+        f:update()
     end
+    Timer.update(dt)
 end
 
-function createFreighters()
+function createFreighter()
     freighter = Freighter.create()
     freighter:load()
-
-    elapsedSeconds = love.timer.getTime()
-    --create 5 fighters
-    for i=1,5 do
-        if tablelength(Freighters) <= 5 then
-
-            freighter = Freighter.create()
-            print("#" .. i .. ": diffX = sx - px = " .. freighter.x - 100)
-            print("#" .. i .. ": diffY = sy - py = " .. freighter.y - 50)
-
-            freighter.visible = true
-            table.insert(Freighters, freighter)
-        end
-    end
+    table.insert(Freighters, freighter)
 end
 
 function tablelength(T)
