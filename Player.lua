@@ -6,12 +6,13 @@ Player.__index = Player
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
-local angle, speed = 0, 15
+local rotation, speed = 0, 15
 local playerImg, imgWidth, imgHeight
 
 local dt = love.timer.getDelta()
 local slowdown = false
 local initialShipRotation = math.pi * 1.5
+local rotationSpeed = 0.02
 local fire
 
 function Player.create()
@@ -31,7 +32,7 @@ function Player:load()
 end
 
 function Player:draw()
-    love.graphics.draw(playerImg, self.x, self.y, angle, 1.5, 1.5, imgWidth/2, imgHeight/2)
+    love.graphics.draw(playerImg, self.x, self.y, rotation, 1, 1, imgWidth/2, imgHeight/2)
 
     if hasFired then
         for i,shot in ipairs(self.Shots) do
@@ -42,22 +43,26 @@ end
 
 function Player:update()
     --update rotation
-    if love.keyboard.isDown('right') then
-        angle = angle + math.pi * 0.02
+    if love.keyboard.isDown('right', 'd') then
+        rotation = rotation + math.pi * rotationSpeed
     end
-   if love.keyboard.isDown('left') then
-        angle = angle - math.pi * 0.02
+    if love.keyboard.isDown('left', 'a') then
+        rotation = rotation - math.pi * rotationSpeed
     end
     -- forward movement
-    if love.keyboard.isDown('up') then
-        -- make the player move in the direction he is facing
-        -- slowing down gradually over time
+    if love.keyboard.isDown('up', 'w') then
+        speed = 15
+        self:updateLocation()
+    end
+    if love.keyboard.isDown('down', 's') then
+        speed = -5
         self:updateLocation()
     end
 
     -- shooting
     if fire then
-        Timer.addPeriodic(5, function() self:fire() end)
+        self:fire() -- hammering space key
+        Timer.addPeriodic(5, function() self:fire() end) -- holding space key
 
         fire = false
     end
@@ -71,6 +76,8 @@ function Player:update()
             end
         end
     end
+
+    self:slowdown()
     Timer.update(dt)
 end
 
@@ -86,8 +93,8 @@ function Player:slowdown(ultimate)
 end
 
 function Player:updateLocation()
-    local moveX = math.cos(angle + initialShipRotation) * speed * dt
-    local moveY = math.sin(angle + initialShipRotation) * speed * dt
+    local moveX = math.cos(rotation + initialShipRotation) * speed * dt
+    local moveY = math.sin(rotation + initialShipRotation) * speed * dt
     if self:isInBounds(moveX, moveY) then
         self.x = self.x + moveX
         self.y = self.y + moveY
@@ -99,7 +106,7 @@ function Player:isInBounds(moveX, moveY)
 end
 
 function Player:fire()
-    shot = Shot.create(self.x, self.y, angle)
+    shot = Shot.create(self.x, self.y, rotation)
     shot:load()
     table.insert(self.Shots, shot)
     hasFired = true
@@ -110,7 +117,7 @@ function Player:removeShot(shot)
 end
 
 function love.keyreleased(key)
-    if key == 'w' then
+    if key == 'up' then
         slowdown = true
     end
     if key == ' ' then
