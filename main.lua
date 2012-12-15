@@ -29,9 +29,10 @@ function love.load()
 end
 
 function love.draw()
+    love.graphics.setBackgroundColor(48, 93, 117)
+
     --draw stars
     for i=1,height,1 do
-        --random size
         love.graphics.point(stars[i].x, stars[i].y)
     end
 

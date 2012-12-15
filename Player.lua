@@ -62,8 +62,8 @@ end
 
 function Player:updateLocation()
     if self:isInBounds() then
-        self.y = self.y + math.sin(angle + math.pi/2) * speed * dt
-        self.x = self.x + math.cos(angle + math.pi/2) * speed * dt
+        self.y = self.y + math.sin(angle + math.pi*1.5) * speed * dt
+        self.x = self.x + math.cos(angle + math.pi*1.5) * speed * dt
     else
         --slowdown to zero, slowly
     end
