@@ -6,7 +6,7 @@ Player.__index = Player
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
-local rotation, speed = 0, 15
+local rotation, speed = 0, 0
 local playerImg, imgWidth, imgHeight
 
 local dt = love.timer.getDelta()
@@ -29,6 +29,8 @@ function Player:load()
     playerImg = love.graphics.newImage("img/player.png")
     imgWidth = playerImg:getWidth()
     imgHeight = playerImg:getHeight()
+
+    sfx_shoot = love.audio.newSource("audio/shoot.wav")
 end
 
 function Player:draw()
@@ -78,15 +80,16 @@ function Player:update()
     end
 
     self:slowdown()
+
     Timer.update(dt)
 end
 
 function Player:slowdown(ultimate)
     if slowdown == true then
-        speed = speed - 1.5
+        speed = speed - 1
         self:updateLocation()
         if speed <= 0 then
-            speed = 20
+            speed = 15
             slowdown = false
         end
     end
@@ -109,6 +112,8 @@ function Player:fire()
     shot = Shot.create(self.x, self.y, rotation)
     shot:load()
     table.insert(self.Shots, shot)
+    --love.audio.play(sfx_shoot)
+    --love.audio.rewind(sfx_shoot)
     hasFired = true
 end
 
@@ -117,7 +122,7 @@ function Player:removeShot(shot)
 end
 
 function love.keyreleased(key)
-    if key == 'up' then
+    if key == 'up' or key == 'w' then
         slowdown = true
     end
     if key == ' ' then

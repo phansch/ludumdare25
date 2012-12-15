@@ -1,5 +1,5 @@
 local vector = require 'hump.vector'
-local Freighter = {x, y, visible, rotation, speed, slowdown, destX, destY, imgWidth, imgHeight }
+local Freighter = {x, y, visible, rotation, speed, slowdown, destX, destY, imgWidth, imgHeight, hp }
 Freighter.__index = Freighter
 
 local width = love.graphics.getWidth()
@@ -20,6 +20,7 @@ function Freighter.create()
     --set random destination around planet
     freighter.destX = math.random(100,355)
     freighter.destY = math.random(50,305)
+    freighter.hp = 7
     return freighter
 end
 
