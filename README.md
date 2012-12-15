@@ -1,13 +1,13 @@
 ludumdare25
 ===========
 
-This will be my first entry for the [Ludum Dare](http://www.ludumdare.com/) competition.
+This is going to be my first entry for the [Ludum Dare](http://www.ludumdare.com/) competition.
 
  * My LD Blog: http://www.ludumdare.com/compo/author/plyturon/
  * Timelapse: ~
 
 ## Running the game ##
-If you are using **Windows**, just grab the .exe file and run it.  
+If you are using **Windows**, just grab the .exe file and run it.
 If you are using Mac or Linux, read further.
 
 ### Linux (Ubuntu 32bit/64bit)

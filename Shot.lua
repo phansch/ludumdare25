@@ -3,7 +3,7 @@ Shot.__index = Shot
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
-local shotImg
+local shotImg, imgWidth, imgHeight
 local speed = 10
 local dt = love.timer.getDelta()
 
@@ -43,8 +43,16 @@ function Shot:isInBounds()
     return (self.x + moveX > 0) and (self.y + moveY > 0) and (self.x + moveX < width) and (self.y + moveY < height)
 end
 
-function Shot:hasCollided()
+function Shot:checkCollision(freighter)
+    -- Simple bounding box collision check
+    -- source: https://love2d.org/wiki/BoundingBox.lua
+    local shot_x2 = self.x + imgWidth
+    local shot_y2 = self.y + imgHeight
+    local f_x2 = freighter.x + freighter.imgWidth
+    local f_y2 = freighter.y + freighter.imgHeight
 
+    return self.x < f_x2 and shot_x2 > freighter.x and
+        self.y < f_y2 and shot_y2 > freighter.y
 end
 
 return Shot

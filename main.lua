@@ -9,7 +9,6 @@ local Freighters = {}
 local planet, planetW, planetH
 local stars = {}
 
-local updateFreighters = false
 local dt = love.timer.getDelta()
 local handle
 player = Player.create()
@@ -53,7 +52,15 @@ function love.update()
     player:update()
     for i,f in ipairs(Freighters) do
         f:update()
+        for j,shot in ipairs(player.Shots) do
+            if shot:checkCollision(f) then
+                f.visible = false
+                killFreighter(i)
+                player:removeShot(j)
+            end
+        end
     end
+
     Timer.update(dt)
 end
 
@@ -61,6 +68,10 @@ function createFreighter()
     freighter = Freighter.create()
     freighter:load()
     table.insert(Freighters, freighter)
+end
+
+function killFreighter(freighter)
+    table.remove(Freighters, freighter)
 end
 
 function tablelength(T)

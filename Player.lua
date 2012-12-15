@@ -1,5 +1,5 @@
 local Shot = require 'Shot'
-local Player = {x, y, Shots = {}}
+local Player = {x, y, Shots = {} }
 Player.__index = Player
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
@@ -9,8 +9,6 @@ local playerImg, imgWidth, imgHeight
 local dt = love.timer.getDelta()
 local slowdown = false
 local initialShipRotation = math.pi * 1.5
-
-local Shots = {}
 local fire
 
 function Player.create()
@@ -33,7 +31,7 @@ function Player:draw()
     love.graphics.draw(playerImg, self.x, self.y, angle, 1.5, 1.5, imgWidth/2, imgHeight/2)
 
     if hasFired then
-        for i,shot in ipairs(Shots) do
+        for i,shot in ipairs(self.Shots) do
             shot:draw()
         end
     end
@@ -54,24 +52,21 @@ function Player:update()
         self:updateLocation()
     end
 
-    --shooting
+    -- shooting
     if fire then
         self:fire()
         fire = false
     end
 
     if hasFired then
-        for i,shot in ipairs(Shots) do
+        for i,shot in ipairs(self.Shots) do
             shot:update()
 
             if not shot:isInBounds() then
                 self:removeShot(i)
             end
         end
-
-
     end
-    Timer.update(dt)
 end
 
 function Player:slowdown(ultimate)
@@ -98,16 +93,15 @@ function Player:isInBounds(moveX, moveY)
     return (self.x + moveX > 0) and (self.y + moveY > 0) and (self.x + moveX < width) and (self.y + moveY < height)
 end
 
-function Player:fire(destX, destY)
+function Player:fire()
     shot = Shot.create(self.x, self.y, angle)
     shot:load()
-    table.insert(Shots, shot)
+    table.insert(self.Shots, shot)
     hasFired = true
 end
 
 function Player:removeShot(shot)
-    print(shot)
-    table.remove(Shots, shot)
+    table.remove(self.Shots, shot)
 end
 
 function love.keyreleased(key)
@@ -117,7 +111,6 @@ function love.keyreleased(key)
 end
 
 function love.keypressed(key)
-    -- ignore non-printable characters (see http://www.ascii-code.com/)
     if key == ' ' then
         fire = true
     end

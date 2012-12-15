@@ -1,10 +1,10 @@
 local vector = require 'hump.vector'
-local Freighter = {x, y, visible, rotation, speed, slowdown, destX, destY }
+local Freighter = {x, y, visible, rotation, speed, slowdown, destX, destY, imgWidth, imgHeight }
 Freighter.__index = Freighter
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
-local img, imgWidth, imgHeight
+local img
 
 local dt = love.timer.getDelta()
 
@@ -25,13 +25,13 @@ end
 
 function Freighter:load()
     img = love.graphics.newImage("img/freighter.png")
-    imgWidth = img:getWidth()
-    imgHeight = img:getHeight()
+    self.imgWidth = img:getWidth()
+    self.imgHeight = img:getHeight()
 end
 
 function Freighter:draw()
     if self.visible then
-        love.graphics.draw(img, self.x, self.y, self.rotation, 2, 2, imgWidth/2, imgHeight/2)
+        love.graphics.draw(img, self.x, self.y, self.rotation, 2, 2, self.imgWidth/2, self.imgHeight/2)
     end
 end
 
