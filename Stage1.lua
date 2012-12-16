@@ -80,7 +80,7 @@ function state:keyreleased(key)
 end
 
 function state:keypressed(key)
-    if key == 'return' then -- when dialogue is confirmed
+    if key == 'return' and drawUI then -- when dialogue is confirmed
         drawUI = false
         player:stopFire()
 

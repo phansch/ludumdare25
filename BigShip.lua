@@ -37,17 +37,26 @@ function BigShip:update(dt)
     self.rotation = rotateTo
 
     self:updateLocation(dt)
+
+    for i,shot in ipairs(self.Shots) do
+        shot:update()
+    end
 end
 
 function BigShip:draw()
     if self.visible then
         love.graphics.draw(img, self.x, self.y, self.rotation, 3, 3, self.imgWidth/2, self.imgHeight/2)
     end
+
+    --draw shots
+    for i,shot in ipairs(self.Shots) do
+        shot:draw()
+    end
 end
 
 function BigShip:fire(x, y)
     love.graphics.line(self.x, self.y, x, y)
-    self:createShots()
+
 end
 
 function BigShip:updateLocation(dt)
@@ -64,15 +73,7 @@ function BigShip:isInBounds(moveX, moveY)
 end
 
 function BigShip:createShots()
-    local shotOffsetX, shotOffsetY = 7, 7
-    if (self.rotation > math.pi/2 and self.rotation < math.pi) or (self.rotation > math.pi*1.5 and self.rotation < math.pi*2) then
-        shotOffsetY = shotOffsetY * -1
-    end
-
-    local shot = Shot.create(self.x+shotOffsetX, self.y+shotOffsetY, self.rotation)
-    shot:load()
-    table.insert(self.Shots, shot)
-    shot = Shot.create(self.x-shotOffsetX, self.y-shotOffsetY, self.rotation)
+    shot = Shot.create(self.x, self.y, self.rotation)
     shot:load()
     table.insert(self.Shots, shot)
 end

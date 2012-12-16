@@ -1,5 +1,5 @@
 -- The main part of the game
-
+-- The worst code I've written
 
 Gamestate.stage2 = Gamestate.new()
 local state = Gamestate.stage2
@@ -22,47 +22,50 @@ local conversation = Conversation.create(conv_stage2_1_title,
                                         conv_stage2_1_text,
                                         conv_stage2_1_confirm)
 
+local conversation2 = Conversation.create(conv_stage2_2_title,
+                                        conv_stage2_2_text,
+                                        conv_stage2_2_confirm)
+
 
 local maxKills = 5 --this is when the game ends
 local conv2triggerKills = 2 -- when the 2nd conversation appears
 
 local Freighters = {}
 local freighterCount, killCount = 0, 0
-local drawUI = true
+local drawUI, drawUI2 = true, false
 
 function state:init()
     Timer.clear()
     player:load()
     stars:load()
-    conversation.load()
+    conversation:load()
+    conversation2:load()
     bigShip:load()
     planet:load()
 
     --add freighters
-    Timer.addPeriodic(1.5, function() self:createFreighter() end, 10)
-    freighterCount = 10
+    freighterCount = 0
 
     psystems:initFTLJump()
     psystems:initExplosion()
 end
 
 function state:update(dt)
-    if not drawUI then
+    if not drawUI and not drawUI2 then
         player:update(dt)
         jumpRechargeBar:update(dt)
     end
 
-    if freighterCount < 4 and killCount < maxKills then
+    if killCount ~= conv2triggerKills and not drawUI2 then
+        self:updateFreighterStatus(dt)
+    end
+
+    if freighterCount < 4 and killCount < maxKills and not drawUI2 then
         local randomAdd = math.random(3, 5)
-        -- add bewteen 3 and 5 freighters
-        Timer.addPeriodic(1, function() self:createFreighter() end, randomAdd)
+        -- add between 3 and 5 freighters
+        Timer.addPeriodic(1.5, function() self:createFreighter() end, randomAdd)
         freighterCount = freighterCount + randomAdd
     end
-    if killCount > maxKills then
-        -- conversation, their sensors picked up a huge ass ship nearby
-        bigShip:update(dt)
-    end
-    self:updateFreighterStatus(dt)
 
     psystems:update(dt)
 end
@@ -87,19 +90,21 @@ function state:draw()
         love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setColor(255, 255, 255, 255)
         conversation:draw()
-        if killCount > 0 then
-            player:draw()
-        end
+    end
+
+    if drawUI2 then
+        love.graphics.setColor(0, 0, 0, 100)
+        love.graphics.rectangle("fill", 0, 0, width, height)
+        love.graphics.setColor(255, 255, 255, 255)
+        conversation:draw()
+
+        player:draw()
     end
 
     if killCount == conv2triggerKills then
-        drawUI = true
-        -- conversation, their sensors picked up a huge ass ship nearby
-        conversation = Conversation.create(conv_stage2_2_title,
-                                        conv_stage2_2_text,
-                                        conv_stage2_2_confirm)
-        killCount = killCount + 1
+        drawUI2 = true
 
+        killCount = killCount + 1
     end
     if killCount > maxKills and freighterCount == 0 then
         Gamestate.switch(Gamestate.stage3)
@@ -121,12 +126,19 @@ end
 
 function state:keypressed(key)
     if key == 'return' and drawUI then --when UI is confirmed
-        drawUI = false
-        player:stopFire() --stop firing after ui is hidden
+
+        player:stopFire() --stop firing after UI is hidden
+
 
         -- only play jump animation when just arrived in system
-        if killCount == 0 then
+        if killCount == 0 and drawUI then
+            drawUI = false
             self:FTLJump(player.x, player.y)
+        end
+
+        --to hide the second conversation
+        if killCount > 0 and drawUI2 then
+            drawUI2 = false
         end
     end
     if key == ' ' and not drawUI then

@@ -1,13 +1,12 @@
 local Shot = require 'Shot'
 local Timer = require 'hump.timer'
 
-local Player = {x, y, Shots = {}, spaceDown }
+local Player = {x, y, Shots = {} }
 Player.__index = Player
 
 local rotation, speed = 0, 0
 local playerImg, imgWidth, imgHeight
 
-local slowdown = false
 local initialShipRotation = math.pi * 1.5
 local rotationSpeed = 0.015
 
@@ -16,9 +15,8 @@ local shotTimer = Timer.new()
 function Player.create()
     local player = {}
     setmetatable(player, Player)
-    player.x = width/2
-    player.y = height/2
-    player.spaceDown = false
+    player.x = width-200
+    player.y = height-200
     return player
 end
 
@@ -39,13 +37,13 @@ function Player:update(dt)
         rotation = self:lowRotation(rotation)
     end
     -- forward movement
-    if love.keyboard.isDown('up', 'w') then
-        speed = 200
-        self:updateLocation(dt)
+    if love.keyboard.isDown('up', 'w') and self.slowdown then
+        speed = 300
+        --self:updateLocation(dt)
     end
     if love.keyboard.isDown('down', 's') then
         speed = -50
-        self:updateLocation(dt)
+
     end
 
     --update all shots
@@ -58,6 +56,7 @@ function Player:update(dt)
     end
 
     shotTimer:update(dt)
+    self:updateLocation(dt)
     self:slowdown(dt)
 end
 
@@ -70,14 +69,15 @@ function Player:draw()
 end
 
 function Player:slowdown(dt)
-    if slowdown == true then
-        speed = speed - 10
-        self:updateLocation(dt)
-        if speed <= 0 then
-            speed = 200
-            slowdown = false
-        end
+    --forward slowdown
+    if speed >= 0 then
+        speed = speed - 1.5
     end
+    --backward slowdown
+    if speed <= 0 then
+        speed = speed + 1.5
+    end
+    --self:updateLocation(dt)
 end
 
 function Player:updateLocation(dt)
