@@ -14,13 +14,14 @@ local PSystems = require 'ParticleSystems'
 local player = Player.create()
 local stars = Stars.create()
 local planet = Planet.create()
+local psystems = PSystems.create()
 
 local conversation = Conversation.create(conv_stage2_1_title,
                                         conv_stage2_1_text,
                                         conv_stage2_1_confirm)
 
 local Freighters = {}
-local psystems = PSystems.create()
+
 
 local drawUI = true
 
@@ -39,7 +40,6 @@ function state:init()
 end
 
 function state:update(dt)
-
     if not drawUI then
         player:update(dt)
     end

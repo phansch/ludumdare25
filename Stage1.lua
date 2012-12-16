@@ -7,9 +7,11 @@ local state = Gamestate.stage1
 local Player = require 'Player'
 local Stars = require 'Stars'
 local Conversation = require 'Conversation'
+local PSystems = require 'ParticleSystems'
 
 local player = Player.create()
 local stars = Stars.create()
+local psystems = PSystems.create()
 
 local conversation = Conversation.create(conv_stage1_1_title,
                                         conv_stage1_1_text,
@@ -22,22 +24,23 @@ function state:init()
     stars:load()
     conversation:load()
     player:load()
+    psystems:initFTLJump()
 
     Timer.add(2, function()
-        player:FTLJump()
+        self:FTLJump(player.x, player.y)
         drawPlayer = true
 
+        --draw dialogue after a few seconds
         Timer.add(5, function() drawUI = true end)
     end)
-
-    --draw dialogue after a few seconds
-
 end
 
 function state:update(dt)
     if not drawUI then
         player:update(dt)
     end
+
+    psystems:update(dt)
 end
 
 function state:draw()
@@ -46,6 +49,8 @@ function state:draw()
     if drawPlayer then
         player:draw()
     end
+
+    psystems:draw()
 
     if drawUI then
         love.graphics.setColor(0, 0, 0, 100)
@@ -73,7 +78,7 @@ function state:keypressed(key)
 
         --switch to next gamestate in a few
         Timer.add(5, function()
-            player:FTLJump() -- play jump animation
+            self:FTLJump() -- play jump animation
 
             --stop drawing the player after jump animation
             Timer.add(0.2, function() drawPlayer = false end)
@@ -89,4 +94,12 @@ function state:keypressed(key)
     if key == ' ' and not drawUI then
         player:fireConstantly()
     end
+end
+
+function state:FTLJump(x, y)
+    psystems[1]:setPosition(player.x, player.y)
+    psystems[1]:start()
+
+    love.audio.play(sfx_ftl)
+    love.audio.rewind(sfx_ftl)
 end

@@ -8,11 +8,12 @@ local menu = require 'Menu' -- menu gamestate
 local stage1 = require 'Stage1'
 local stage2 = require 'Stage2'
 --local stage3 = require 'Stage3'
+local credits = require 'Credits'
 
 function love.load()
     love.graphics.setFont(font)
     Gamestate.registerEvents()
-    Gamestate.switch(Gamestate.stage2)
+    Gamestate.switch(Gamestate.menu)
 end
 
 function love.update(dt)
