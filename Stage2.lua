@@ -125,10 +125,9 @@ function state:keyreleased(key)
 end
 
 function state:keypressed(key)
-    if key == 'return' and drawUI then --when UI is confirmed
+    if key == 'return' and (drawUI or drawUI2) then --when UI is confirmed
 
         player:stopFire() --stop firing after UI is hidden
-
 
         -- only play jump animation when just arrived in system
         if killCount == 0 and drawUI then
@@ -137,11 +136,13 @@ function state:keypressed(key)
         end
 
         --to hide the second conversation
+        print(drawUI2)
         if killCount > 0 and drawUI2 then
+            print("yup, drawUI2=false")
             drawUI2 = false
         end
     end
-    if key == ' ' and not drawUI then
+    if key == ' ' and not drawUI and not drawUI2 then
         player:fireConstantly()
     end
 end
