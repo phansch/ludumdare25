@@ -53,17 +53,25 @@ function state:update(dt)
         jumpRechargeBar:update(dt)
     end
 
-    if killCount ~= conv2triggerKills and not drawUI2 then
+    if not drawUI2 then
         self:updateFreighterStatus(dt)
     end
 
     --print(freighterCount, killCount, drawUI2)
     if freighterCount < 4 and killCount < maxKills and not drawUI2 then
-        print("yup, should add")
         local randomAdd = math.random(3, 5)
         -- add between 3 and 5 freighters
         Timer.addPeriodic(1.5, function() self:createFreighter() end, randomAdd)
         freighterCount = freighterCount + randomAdd
+    end
+
+    if killCount > maxKills and freighterCount == 0 then
+        Timer.add(5, function() Gamestate.switch(Gamestate.stage3) end)
+    end
+
+    if killCount == conv2triggerKills then
+        drawUI2 = true
+        killCount = killCount + 1
     end
 
     psystems:update(dt)
@@ -98,15 +106,6 @@ function state:draw()
         conversation2:draw()
 
         player:draw()
-    end
-
-    if killCount == conv2triggerKills then
-        drawUI2 = true
-
-        killCount = killCount + 1
-    end
-    if killCount > maxKills and freighterCount == 0 then
-        Gamestate.switch(Gamestate.stage3)
     end
 
     psystems:draw()
