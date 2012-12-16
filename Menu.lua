@@ -14,10 +14,10 @@ end
 
 function state:draw()
     stars:draw()
-    love.graphics.print(menu_instr_center, width/2-100, height/2)
-    love.graphics.print(menu_instr_bottom, width/2-200, height-20)
+    love.graphics.print(menu_instr_center, width/2-300, height/5+150)
+    love.graphics.print(menu_instr_bottom, 20, height-20)
     love.graphics.setColor(255, 0, 0)
-    love.graphics.printf(menu_story_title, width/2-80, height/5-40, 500)
+    love.graphics.printf(menu_story_title, width/2-300, height/5-40, 500)
     love.graphics.printf(menu_story, width/2-300, height/5, width/2)
     love.graphics.setColor(255, 255, 255)
 end
@@ -25,5 +25,8 @@ end
 function state:keypressed(key)
     if key == 'return' then
         Gamestate.switch(Gamestate.stage1)
+    end
+    if key == 'f2' then
+        Gamestate.switch(Gamestate.credits)
     end
 end

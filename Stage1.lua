@@ -7,6 +7,7 @@ local state = Gamestate.stage1
 local Player = require 'Player'
 local Stars = require 'Stars'
 local Conversation = require 'Conversation'
+JumpRechargeBar = require 'JumpRechargeBar'
 local PSystems = require 'ParticleSystems'
 
 local player = Player.create()
@@ -16,6 +17,7 @@ local psystems = PSystems.create()
 local conversation = Conversation.create(conv_stage1_1_title,
                                         conv_stage1_1_text,
                                         conv_stage1_1_confirm)
+jumpRechargeBar = JumpRechargeBar.create(0.5)
 
 local drawUI = false
 local drawPlayer = false
@@ -38,6 +40,7 @@ end
 function state:update(dt)
     if not drawUI then
         player:update(dt)
+        jumpRechargeBar:update(dt)
     end
 
     psystems:update(dt)
@@ -48,6 +51,11 @@ function state:draw()
 
     if drawPlayer then
         player:draw()
+
+    end
+
+    if not drawUI then
+        jumpRechargeBar:draw()
     end
 
     psystems:draw()
@@ -79,6 +87,9 @@ function state:keypressed(key)
         --switch to next gamestate in a few
         Timer.add(5, function()
             self:FTLJump() -- play jump animation
+
+            --set jumper bar to 0
+            jumpRechargeBar.level = 0
 
             --stop drawing the player after jump animation
             Timer.add(0.2, function() drawPlayer = false end)
