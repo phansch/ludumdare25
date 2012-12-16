@@ -1,6 +1,5 @@
 local Shot = require 'Shot'
 local Timer = require 'hump.timer'
-local PSystems = require 'ParticleSystems'
 
 local Player = {x, y, Shots = {}, spaceDown }
 Player.__index = Player
@@ -13,7 +12,6 @@ local initialShipRotation = math.pi * 1.5
 local rotationSpeed = 0.015
 
 local shotTimer = Timer.new()
-local psystems = PSystems.create()
 
 function Player.create()
     local player = {}
@@ -28,8 +26,6 @@ function Player:load()
     playerImg = love.graphics.newImage("img/player.png")
     imgWidth = playerImg:getWidth()
     imgHeight = playerImg:getHeight()
-
-    psystems:initFTLJump()
 end
 
 function Player:update(dt)
@@ -59,8 +55,6 @@ function Player:update(dt)
         end
     end
 
-    psystems:update(dt)
-
     shotTimer:update(dt)
     self:slowdown(dt)
 end
@@ -71,9 +65,6 @@ function Player:draw()
     for i,shot in ipairs(self.Shots) do
         shot:draw()
     end
-
-    --draw ftl jump
-    psystems:draw()
 end
 
 function Player:slowdown(dt)
@@ -87,28 +78,29 @@ function Player:slowdown(dt)
     end
 end
 
-function Player:FTLJump()
-    --activate sound effect
-    love.audio.play(sfx_ftl)
-    love.audio.rewind(sfx_ftl)
-
-    --enable particle system
-    psystems:reset()
-    psystems[1]:setPosition(self.x, self.y)
-    psystems[1]:start()
-end
-
 function Player:updateLocation(dt)
     local moveX = math.cos(rotation + initialShipRotation) * speed * dt
     local moveY = math.sin(rotation + initialShipRotation) * speed * dt
-    if self:isInBounds(moveX, moveY) then
-        self.x = self.x + moveX
-        self.y = self.y + moveY
-    end
+    self.x = self.x + moveX
+    self.y = self.y + moveY
+
+    self:warp(moveX, moveY)
 end
 
-function Player:isInBounds(moveX, moveY)
-    return (self.x + moveX > 0) and (self.y + moveY > 0) and (self.x + moveX < width) and (self.y + moveY < height)
+function Player:warp(moveX, moveY)
+    print(height)
+    if self.x + moveX < 0 then
+        self.x = width
+    end
+    if self.x + moveX > width then
+        self.x = 0
+    end
+    if self.y + moveY < 0 then
+        self.y = height
+    end
+    if self.y + moveY > height then
+        self.y = 0
+    end
 end
 
 function Player:fireConstantly()
