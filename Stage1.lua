@@ -11,23 +11,27 @@ local Conversation = require 'Conversation'
 local player = Player.create()
 local stars = Stars.create()
 
-local text = "Hail pilot, apparently the coordinated we sent to you, were off by a few lightyears.\n"
-            .."According to our sensors, there's nothing but space dust around you \n"
-            .."It will take a few moments until the new calculation is done.\n"
-            .."You might want to use the time to get familiar with the controls of your ship.\n"
-            .."\n\n Use w/a/s/d or the arrow keys to control your ship and space to fire."
-
-local conversation = Conversation.create("Incoming transmission ...", text, "Wait for coordinates (Press enter)")
+local conversation = Conversation.create(conv_stage1_1_title,
+                                        conv_stage1_1_text,
+                                        conv_stage1_1_confirm)
 
 local drawUI = false
+local drawPlayer = false
 
 function state:init()
     stars:load()
     conversation:load()
     player:load()
 
+    Timer.add(2, function()
+        player:FTLJump()
+        drawPlayer = true
+
+        Timer.add(5, function() drawUI = true end)
+    end)
+
     --draw dialogue after a few seconds
-    Timer.add(5, function() drawUI = true end)
+
 end
 
 function state:update(dt)
@@ -38,7 +42,10 @@ end
 
 function state:draw()
     stars:draw()
-    player:draw()
+
+    if drawPlayer then
+        player:draw()
+    end
 
     if drawUI then
         love.graphics.setColor(0, 0, 0, 100)
@@ -62,9 +69,22 @@ end
 function state:keypressed(key)
     if key == 'return' then -- when dialogue is confirmed
         drawUI = false
+        player:stopFire()
 
         --switch to next gamestate in a few
-        Timer.add(5, function() Gamestate.switch(Gamestate.stage2) end)
+        Timer.add(5, function()
+            player:FTLJump() -- play jump animation
+
+            --stop drawing the player after jump animation
+            Timer.add(0.2, function() drawPlayer = false end)
+
+            -- wait another 5 seconds to switch to stage2
+            Timer.add(5, function()
+                Gamestate.switch(Gamestate.stage2)
+            end)
+        end)
+
+
     end
     if key == ' ' and not drawUI then
         player:fireConstantly()

@@ -1,19 +1,19 @@
 local Shot = require 'Shot'
 local Timer = require 'hump.timer'
-Player = {x, y, Shots = {}, spaceDown }
+local PSystems = require 'ParticleSystems'
+
+local Player = {x, y, Shots = {}, spaceDown }
 Player.__index = Player
 
-local width = love.graphics.getWidth()
-local height = love.graphics.getHeight()
 local rotation, speed = 0, 0
 local playerImg, imgWidth, imgHeight
 
-local dt = love.timer.getDelta()
 local slowdown = false
 local initialShipRotation = math.pi * 1.5
 local rotationSpeed = 0.015
 
 local shotTimer = Timer.new()
+local psystems = PSystems.create()
 
 function Player.create()
     local player = {}
@@ -28,6 +28,8 @@ function Player:load()
     playerImg = love.graphics.newImage("img/player.png")
     imgWidth = playerImg:getWidth()
     imgHeight = playerImg:getHeight()
+
+    psystems:initFTLJump()
 end
 
 function Player:update(dt)
@@ -40,12 +42,12 @@ function Player:update(dt)
     end
     -- forward movement
     if love.keyboard.isDown('up', 'w') then
-        speed = 15
-        self:updateLocation()
+        speed = 200
+        self:updateLocation(dt)
     end
     if love.keyboard.isDown('down', 's') then
-        speed = -5
-        self:updateLocation()
+        speed = -50
+        self:updateLocation(dt)
     end
 
     --update all shots
@@ -57,8 +59,10 @@ function Player:update(dt)
         end
     end
 
+    psystems:update(dt)
+
     shotTimer:update(dt)
-    self:slowdown()
+    self:slowdown(dt)
 end
 
 function Player:draw()
@@ -68,20 +72,33 @@ function Player:draw()
         shot:draw()
     end
 
+    --draw ftl jump
+    psystems:draw()
 end
 
-function Player:slowdown()
+function Player:slowdown(dt)
     if slowdown == true then
-        speed = speed - 1
-        self:updateLocation()
+        speed = speed - 10
+        self:updateLocation(dt)
         if speed <= 0 then
-            speed = 15
+            speed = 200
             slowdown = false
         end
     end
 end
 
-function Player:updateLocation()
+function Player:FTLJump()
+    --activate sound effect
+    love.audio.play(sfx_ftl)
+    love.audio.rewind(sfx_ftl)
+
+    --enable particle system
+    psystems:reset()
+    psystems[1]:setPosition(self.x, self.y)
+    psystems[1]:start()
+end
+
+function Player:updateLocation(dt)
     local moveX = math.cos(rotation + initialShipRotation) * speed * dt
     local moveY = math.sin(rotation + initialShipRotation) * speed * dt
     if self:isInBounds(moveX, moveY) then

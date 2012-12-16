@@ -1,8 +1,6 @@
 local Shot = {x, y, rotation}
 Shot.__index = Shot
 
-local width = love.graphics.getWidth()
-local height = love.graphics.getHeight()
 local shotImg, imgWidth, imgHeight
 local speed = 30
 local dt = love.timer.getDelta()

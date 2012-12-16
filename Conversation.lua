@@ -1,7 +1,7 @@
 local Conversation = { title, text, closeText }
 Conversation.__index = Conversation
 
-local backdrop
+local backdrop, decal
 
 function Conversation.create(title, text, closeText)
     local conv = {}
@@ -14,6 +14,7 @@ end
 
 function Conversation:load()
     backdrop = love.graphics.newImage("img/dialogue_backdrop.png")
+    decal = love.graphics.newImage("img/decal_green.png")
 end
 
 function Conversation:draw()
@@ -25,6 +26,7 @@ function Conversation:draw()
     y = height - backdrop:getHeight()
     love.graphics.draw(backdrop, x, y, math.rad(0), 0.8, 0.8)
 
+
     love.graphics.setFont(font, 24)
     love.graphics.print(self.title, x+30, y+25)
     love.graphics.setFont(font, 14)
@@ -34,6 +36,8 @@ function Conversation:draw()
     love.graphics.printf(self.closeText, x+350, y+200, 570)
 
     love.graphics.setColorMode(oldColorMode)
+    --draw decal
+    love.graphics.draw(decal, x-10, y-10, math.rad(0), 0.1, 0.1)
     love.graphics.setFont(font, 12)
 end
 

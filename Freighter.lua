@@ -1,11 +1,7 @@
 local Freighter = {x, y, visible, rotation, speed, slowdown, destX, destY, imgWidth, imgHeight, hp }
 Freighter.__index = Freighter
 
-local width = love.graphics.getWidth()
-local height = love.graphics.getHeight()
 local img
-
-local dt = love.timer.getDelta()
 
 function Freighter.create()
     local freighter = {}
@@ -14,7 +10,7 @@ function Freighter.create()
     freighter.y = math.random(height-100, height+50)
     freighter.rotation = 0
     freighter.visible = true
-    freighter.speed = 50
+    freighter.speed = 3
     freighter.slowdown = false
     --set random destination around planet
     freighter.destX = math.random(100,355)
@@ -29,13 +25,7 @@ function Freighter:load()
     self.imgHeight = img:getHeight()
 end
 
-function Freighter:draw()
-    if self.visible then
-        love.graphics.draw(img, self.x, self.y, self.rotation, 2, 2, self.imgWidth/2, self.imgHeight/2)
-    end
-end
-
-function Freighter:update()
+function Freighter:update(dt)
     local rotateTo = math.atan2(self.x - self.destX, self.y - self.destY)
 
     if (rotateTo > self.rotation + math.pi/2) then rotateTo = rotateTo + math.pi*2 end
@@ -43,10 +33,16 @@ function Freighter:update()
 
     self.rotation = rotateTo
 
-    self:updateLocation()
+    self:updateLocation(dt)
 end
 
-function Freighter:updateLocation()
+function Freighter:draw()
+    if self.visible then
+        love.graphics.draw(img, self.x, self.y, self.rotation, 2, 2, self.imgWidth/2, self.imgHeight/2)
+    end
+end
+
+function Freighter:updateLocation(dt)
     local moveX = (self.destX - self.x) / self.speed * dt
     local moveY = (self.destY - self.y) / self.speed * dt
     if self:isInBounds(moveX, moveY) then
