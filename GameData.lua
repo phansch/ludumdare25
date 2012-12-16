@@ -11,9 +11,11 @@ music_background:setVolume(0.7)
 sfx_freighter_hit = love.audio.newSource("audio/hit3.wav", "static")
 sfx_freighter_explosion = love.audio.newSource("audio/explosion2.wav", "static")
 sfx_ftl = love.audio.newSource("audio/ftl.wav", "static")
+sfx_conversation = love.audio.newSource("audio/conversation.wav", "static")
 sfx_freighter_hit:setVolume(0.05)
 sfx_freighter_explosion:setVolume(0.05)
 sfx_ftl:setVolume(0.05)
+sfx_conversation:setVolume(0.05)
 
 -- Texr: menu
 menu_instr_center = "Press [Enter] to play"

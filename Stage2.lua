@@ -27,7 +27,7 @@ local conversation2 = Conversation.create(conv_stage2_2_title,
                                         conv_stage2_2_confirm)
 
 
-local maxKills = 5 --this is when the game ends
+local maxKills = 10 --this is when the game ends
 local conv2triggerKills = 2 -- when the 2nd conversation appears
 
 local Freighters = {}
@@ -43,9 +43,6 @@ function state:init()
     bigShip:load()
     planet:load()
 
-    --add freighters
-    freighterCount = 0
-
     psystems:initFTLJump()
     psystems:initExplosion()
 end
@@ -60,7 +57,9 @@ function state:update(dt)
         self:updateFreighterStatus(dt)
     end
 
+    --print(freighterCount, killCount, drawUI2)
     if freighterCount < 4 and killCount < maxKills and not drawUI2 then
+        print("yup, should add")
         local randomAdd = math.random(3, 5)
         -- add between 3 and 5 freighters
         Timer.addPeriodic(1.5, function() self:createFreighter() end, randomAdd)
@@ -96,7 +95,7 @@ function state:draw()
         love.graphics.setColor(0, 0, 0, 100)
         love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setColor(255, 255, 255, 255)
-        conversation:draw()
+        conversation2:draw()
 
         player:draw()
     end
@@ -136,9 +135,7 @@ function state:keypressed(key)
         end
 
         --to hide the second conversation
-        print(drawUI2)
         if killCount > 0 and drawUI2 then
-            print("yup, drawUI2=false")
             drawUI2 = false
         end
     end

@@ -1,4 +1,4 @@
-local Conversation = { title, text, closeText }
+local Conversation = { title, text, closeText, playedSound = false }
 Conversation.__index = Conversation
 
 local backdrop, decal
@@ -18,6 +18,11 @@ function Conversation:load()
 end
 
 function Conversation:draw()
+    if not self.playedSound then
+        love.audio.play(sfx_conversation)
+        love.audio.rewind(sfx_conversation)
+        self.playedSound = true
+    end
     local oldColorMode = love.graphics.getColorMode()
 
     love.graphics.setColorMode("combine")
