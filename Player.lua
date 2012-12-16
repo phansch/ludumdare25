@@ -32,9 +32,11 @@ function Player:update(dt)
     --update rotation
     if love.keyboard.isDown('right', 'd') then
         rotation = rotation + math.pi * rotationSpeed
+        rotation = self:lowRotation(rotation)
     end
     if love.keyboard.isDown('left', 'a') then
         rotation = rotation - math.pi * rotationSpeed
+        rotation = self:lowRotation(rotation)
     end
     -- forward movement
     if love.keyboard.isDown('up', 'w') then
@@ -87,8 +89,18 @@ function Player:updateLocation(dt)
     self:warp(moveX, moveY)
 end
 
+-- Keeps rotation between 0 and pi*2
+function Player:lowRotation(rotation)
+    if rotation > math.pi * 2 then
+        rotation = rotation - math.pi * 2
+    end
+    if rotation < 0 then
+        rotation = rotation + math.pi * 2
+    end
+    return rotation
+end
+
 function Player:warp(moveX, moveY)
-    print(height)
     if self.x + moveX < 0 then
         self.x = width
     end
@@ -106,14 +118,24 @@ end
 function Player:fireConstantly()
     -- shoots every 0.2 seconds
     shotTimer:addPeriodic(0.2, function()
-        shot = Shot.create(self.x, self.y, rotation)
-        shot:load()
-        table.insert(self.Shots, shot)
+        self:createShots()
     end)
 end
 
 function Player:fireSingle()
-    shot = Shot.create(self.x, self.y, rotation)
+    self:createShots()
+end
+
+function Player:createShots()
+    local shotOffsetX, shotOffsetY = 7, 7
+    if (rotation > math.pi/2 and rotation < math.pi) or (rotation > math.pi*1.5 and rotation < math.pi*2) then
+        shotOffsetY = shotOffsetY * -1
+    end
+
+    shot = Shot.create(self.x+shotOffsetX, self.y+shotOffsetY, rotation)
+    shot:load()
+    table.insert(self.Shots, shot)
+    shot = Shot.create(self.x-shotOffsetX, self.y-shotOffsetY, rotation)
     shot:load()
     table.insert(self.Shots, shot)
 end

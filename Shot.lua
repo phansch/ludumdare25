@@ -42,8 +42,6 @@ function Shot:isInBounds()
 end
 
 function Shot:checkCollision(freighter)
-    -- Simple bounding box collision check
-    -- source: https://love2d.org/wiki/BoundingBox.lua
     local shot_x2 = self.x + imgWidth
     local shot_y2 = self.y + imgHeight
     local f_x2 = freighter.x + freighter.imgWidth

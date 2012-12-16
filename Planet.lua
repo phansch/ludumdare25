@@ -17,7 +17,7 @@ function Planet:load()
 end
 
 function Planet:draw()
-    love.graphics.draw(planet, x, y, rotation) -- draw planet
+    love.graphics.draw(planet, x, y, rotation, 2.0, 2.0) -- draw planet
 end
 
 return Planet
