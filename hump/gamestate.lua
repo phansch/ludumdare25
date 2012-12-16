@@ -34,6 +34,7 @@ local GS = {}
 function GS.new()
 	return {
 		init             = __NULL__,
+		load             = __NULL__,
 		enter            = __NULL__,
 		leave            = __NULL__,
 		update           = __NULL__,
@@ -66,7 +67,7 @@ local registry = setmetatable({}, {__index = function() return __NULL__ end})
 local all_callbacks = {
 	'update', 'draw', 'focus', 'keypressed', 'keyreleased',
 	'mousepressed', 'mousereleased', 'joystickpressed',
-	'joystickreleased', 'quit'
+	'joystickreleased', 'quit', 'load'
 }
 
 function GS.registerEvents(callbacks)

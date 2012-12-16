@@ -25,7 +25,7 @@ function Shot:load()
 end
 
 function Shot:draw()
-    love.graphics.draw(shotImg, self.x, self.y, self.rotation, 0.25, 0.25, imgWidth/2, imgHeight/2)
+    love.graphics.draw(shotImg, self.x, self.y, self.rotation, 0.25, 0.8, imgWidth/2, imgHeight/2)
 end
 
 function Shot:update()

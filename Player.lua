@@ -1,8 +1,7 @@
 local Shot = require 'Shot'
 local Timer = require 'hump.timer'
-local Player = {x, y, Shots = {} }
+Player = {x, y, Shots = {}, spaceDown }
 Player.__index = Player
-
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
@@ -12,16 +11,16 @@ local playerImg, imgWidth, imgHeight
 local dt = love.timer.getDelta()
 local slowdown = false
 local initialShipRotation = math.pi * 1.5
-local rotationSpeed = 0.02
-local fire
+local rotationSpeed = 0.015
+
+local shotTimer = Timer.new()
 
 function Player.create()
     local player = {}
     setmetatable(player, Player)
-    player.x = 300
-    player.y = 300
-    player.dirX = 0
-    player.dirY = 0
+    player.x = width/2
+    player.y = height/2
+    player.spaceDown = false
     return player
 end
 
@@ -29,21 +28,9 @@ function Player:load()
     playerImg = love.graphics.newImage("img/player.png")
     imgWidth = playerImg:getWidth()
     imgHeight = playerImg:getHeight()
-
-    sfx_shoot = love.audio.newSource("audio/shoot.wav")
 end
 
-function Player:draw()
-    love.graphics.draw(playerImg, self.x, self.y, rotation, 1, 1, imgWidth/2, imgHeight/2)
-
-    if hasFired then
-        for i,shot in ipairs(self.Shots) do
-            shot:draw()
-        end
-    end
-end
-
-function Player:update()
+function Player:update(dt)
     --update rotation
     if love.keyboard.isDown('right', 'd') then
         rotation = rotation + math.pi * rotationSpeed
@@ -61,30 +48,29 @@ function Player:update()
         self:updateLocation()
     end
 
-    -- shooting
-    if fire then
-        self:fire() -- hammering space key
-        Timer.addPeriodic(5, function() self:fire() end) -- holding space key
+    --update all shots
+    for i,shot in ipairs(self.Shots) do
+        shot:update()
 
-        fire = false
-    end
-
-    if hasFired then
-        for i,shot in ipairs(self.Shots) do
-            shot:update()
-
-            if not shot:isInBounds() then
-                self:removeShot(i)
-            end
+        if not shot:isInBounds() then
+            self:removeShot(i)
         end
     end
 
+    shotTimer:update(dt)
     self:slowdown()
-
-    Timer.update(dt)
 end
 
-function Player:slowdown(ultimate)
+function Player:draw()
+    love.graphics.draw(playerImg, self.x, self.y, rotation, 1, 1, imgWidth/2, imgHeight/2)
+
+    for i,shot in ipairs(self.Shots) do
+        shot:draw()
+    end
+
+end
+
+function Player:slowdown()
     if slowdown == true then
         speed = speed - 1
         self:updateLocation()
@@ -108,33 +94,31 @@ function Player:isInBounds(moveX, moveY)
     return (self.x + moveX > 0) and (self.y + moveY > 0) and (self.x + moveX < width) and (self.y + moveY < height)
 end
 
-function Player:fire()
+function Player:fireConstantly()
+    -- shoots every 0.2 seconds
+    shotTimer:addPeriodic(0.2, function()
+        shot = Shot.create(self.x, self.y, rotation)
+        shot:load()
+        table.insert(self.Shots, shot)
+    end)
+end
+
+function Player:fireSingle()
     shot = Shot.create(self.x, self.y, rotation)
     shot:load()
     table.insert(self.Shots, shot)
-    --love.audio.play(sfx_shoot)
-    --love.audio.rewind(sfx_shoot)
-    hasFired = true
 end
 
 function Player:removeShot(shot)
     table.remove(self.Shots, shot)
 end
 
-function love.keyreleased(key)
-    if key == 'up' or key == 'w' then
-        slowdown = true
-    end
-    if key == ' ' then
-        Timer.clear()
-    end
+function Player:doSlowdown()
+    slowdown = true
 end
 
-function love.keypressed(key)
-    if key == ' ' then
-        fire = true
-    end
-
+function Player:stopFire()
+    shotTimer:clear()
 end
 
 return Player

@@ -1,4 +1,3 @@
-local vector = require 'hump.vector'
 local Freighter = {x, y, visible, rotation, speed, slowdown, destX, destY, imgWidth, imgHeight, hp }
 Freighter.__index = Freighter
 
